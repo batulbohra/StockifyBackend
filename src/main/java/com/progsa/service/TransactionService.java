@@ -63,11 +63,47 @@ public class TransactionService {
             if (existingPortfolio == null) {
                 portfolioDao.createPortfolioEntry(newPortfolio);
             } else {
-                // Check net summation directly from the database
                 portfolioDao.updatePortfolioEntry(existingPortfolio, transactionEntity.getVolume());
             }
 
-            String response = "stock name: " + newTransaction.getStockName() + " volume: " + newTransaction.getVolume();
+            return ResponseEntity.ok(new TransactionOutputModel(newTransaction.getStockName(), newTransaction.getVolume()));
+        } catch(Exception e){
+            log.error("Service Error", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new TransactionOutputModel(null,0));
+        }
+    }
+
+    @Transactional
+    public ResponseEntity<TransactionOutputModel> sellStock(TransactionInputModel transactionEntity) {
+        try {
+            // Fetch the user from the database
+            UserInfo user = userInfoDao.getUserByEmail(transactionEntity.getEmail());
+
+            // Calculate the cost
+            double cost = transactionEntity.getPrice() * transactionEntity.getVolume();
+
+            log.info(user.getEmail());
+            // Update user's balance
+            double newBalance = user.getBalance() + cost;
+            user.setBalance(newBalance);
+            userInfoDao.updateUserDetails(user);
+
+            log.info(user.getEmail());
+
+            // Create a transaction record
+            TransactionEntity newTransaction = new TransactionEntity(transactionEntity.getEmail(), transactionEntity.getStockName(),
+                    transactionEntity.getSymbol(), new Date(), new Date(), transactionEntity.getVolume(),
+                    transactionEntity.getPrice(), transactionEntity.getVolume()* transactionEntity.getPrice(), "sell");
+            transactionDaoImpl.createTransaction(newTransaction);
+
+            // Update Portfolio table
+            PortfolioEntity existingPortfolio = portfolioDao.findByEmailAndSymbol(transactionEntity.getEmail(), transactionEntity.getSymbol());
+            if (existingPortfolio.getVolume() == transactionEntity.getVolume()){
+                portfolioDao.deletePortfolioEntry(existingPortfolio);
+            } else{
+                portfolioDao.updatePortfolioEntry(existingPortfolio, -1*transactionEntity.getVolume());
+            }
+
             return ResponseEntity.ok(new TransactionOutputModel(newTransaction.getStockName(), newTransaction.getVolume()));
         } catch(Exception e){
             log.error("Service Error", e);

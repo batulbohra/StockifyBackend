@@ -34,5 +34,14 @@ public class TransactionController {
         }
     }
 
-
+    @PostMapping(value="/sell", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TransactionOutputModel> sellStock(@RequestBody TransactionInputModel transactionInput) {
+        try {
+            ResponseEntity<TransactionOutputModel> response = transactionService.sellStock(transactionInput);
+            return ResponseEntity.ok(response.getBody());
+        } catch (Exception e) {
+            // Handle internal server error
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ERROR_MESSAGE, e);
+        }
+    }
 }

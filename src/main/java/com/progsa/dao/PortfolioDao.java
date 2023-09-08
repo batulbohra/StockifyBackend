@@ -9,4 +9,5 @@ public interface PortfolioDao {
     PortfolioEntity findByEmailAndSymbol(String email, String symbol);
     void createPortfolioEntry(PortfolioEntity portfolioEntry);
     void updatePortfolioEntry(PortfolioEntity portfolioEntry, int additionalVolume);
+    void deletePortfolioEntry(PortfolioEntity portfolioEntity);
 }
