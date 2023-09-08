@@ -1,6 +1,7 @@
 package com.progsa.model;
 
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -43,4 +44,16 @@ public class TransactionEntity {
 
     @Column(name = "transaction_type", nullable = false)
     private String transactionType;
+
+    public TransactionEntity(String email, String stockName, String symbol, Date time, Date date, int volume, double price, double cost, String transactionType) {
+        this.email = email;
+        this.stockName = stockName;
+        this.symbol = symbol;
+        this.time = time;
+        this.date = date;
+        this.volume = volume;
+        this.price = price;
+        this.cost = cost;
+        this.transactionType = transactionType;
+    }
 }

@@ -1,13 +1,19 @@
 package com.progsa.controller;
 
+import com.progsa.OutputModels.TransactionInputModel;
+import com.progsa.OutputModels.TransactionOutputModel;
 import com.progsa.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
+
+import static com.progsa.Constants.ERROR_MESSAGE;
 
 @RestController
-@RequestMapping("/api/transactions")
+@RequestMapping("/api/transaction")
 public class TransactionController {
 
     private final TransactionService transactionService;
@@ -17,21 +23,16 @@ public class TransactionController {
         this.transactionService = transactionService;
     }
 
-    @PostMapping("/buy")
-    public ResponseEntity<String> buyStock(
-            @RequestParam String email,
-            @RequestParam String stockName,
-            @RequestParam String symbol,
-            @RequestParam double price,
-            @RequestParam int volume) {
+    @PostMapping(value="/buy", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<TransactionOutputModel> buyStock(@RequestBody TransactionInputModel transactionInput) {
         try {
-            ResponseEntity<String> response = transactionService.buyStock(email, stockName, symbol, price, volume);
+            ResponseEntity<TransactionOutputModel> response = transactionService.buyStock(transactionInput);
             return ResponseEntity.ok(response.getBody());
         } catch (Exception e) {
             // Handle internal server error
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error while buying the stock");
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ERROR_MESSAGE, e);
         }
     }
 
-    // Define other endpoints and methods for transaction-related operations here
+
 }
