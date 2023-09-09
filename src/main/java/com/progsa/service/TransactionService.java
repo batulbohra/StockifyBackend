@@ -1,7 +1,7 @@
 package com.progsa.service;
 
-import com.progsa.OutputModels.TransactionInputModel;
-import com.progsa.OutputModels.TransactionOutputModel;
+import com.progsa.IOModels.TransactionInputModel;
+import com.progsa.IOModels.TransactionOutputModel;
 import com.progsa.dao.PortfolioDao;
 import com.progsa.dao.TransactionDaoImpl;
 import com.progsa.dao.UserInfoDao;

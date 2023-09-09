@@ -2,15 +2,15 @@ package com.progsa.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Service
 @Slf4j
@@ -43,20 +43,20 @@ public class MarketStatusService {
             JsonNode rootNode = objectMapper.readTree(response);
             JsonNode performers = rootNode.get(performersType);
 
-            List<String> performersList = new ArrayList<>();
-            for (int i = 0; i < Math.min(performers.size(), 10); i++) {
-                JsonNode performer = performers.get(i);
-                String ticker = performer.get("ticker").asText();
-                String price = performer.get("price").asText();
-                String changeAmount = performer.get("change_amount").asText();
-                String changePercentage = performer.get("change_percentage").asText();
-                String volume = performer.get("volume").asText();
-                performersList.add("Ticker: " + ticker + ", Price: " + price + ", Change Amount: " + changeAmount +
-                        ", Change Percentage: " + changePercentage + ", Volume: " + volume);
+            ArrayNode simplifiedOutput = JsonNodeFactory.instance.arrayNode();
+            int count=1;
+            for (JsonNode performer : performers) {
+                ObjectNode simplifiedMatch = JsonNodeFactory.instance.objectNode();
+                simplifiedMatch.put("ticker", performer.get("ticker").asText());
+                simplifiedMatch.put("price", performer.get("price").asText());
+                simplifiedMatch.put("volume", performer.get("volume").asText());
+                simplifiedOutput.add(simplifiedMatch);
+                count++;
+                if (count==10) break;
             }
 
             // Convert the extracted data to a JSON array string
-            String processedResponse = objectMapper.writeValueAsString(performersList);
+            String processedResponse = objectMapper.writeValueAsString(simplifiedOutput);
             log.info(processedResponse);
 
             return ResponseEntity.ok(processedResponse);

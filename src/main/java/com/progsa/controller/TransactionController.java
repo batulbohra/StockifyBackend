@@ -1,7 +1,7 @@
 package com.progsa.controller;
 
-import com.progsa.OutputModels.TransactionInputModel;
-import com.progsa.OutputModels.TransactionOutputModel;
+import com.progsa.IOModels.TransactionInputModel;
+import com.progsa.IOModels.TransactionOutputModel;
 import com.progsa.service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

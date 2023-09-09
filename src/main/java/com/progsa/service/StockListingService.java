@@ -1,8 +1,16 @@
 package com.progsa.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.progsa.IOModels.StockDetailInputModel;
+import com.progsa.IOModels.StockDetailOutputModel;
+import com.progsa.dao.PortfolioDao;
+import com.progsa.dao.TransactionDao;
+import com.progsa.model.PortfolioEntity;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -23,9 +31,13 @@ public class StockListingService {
     private String finnhubApiKey;
 
     private final RestTemplate restTemplate;
+    private final PortfolioDao portfolioDao;
+    private final TransactionDao transactionDao;
 
-    public StockListingService(RestTemplate restTemplate) {
+    public StockListingService(RestTemplate restTemplate, PortfolioDao portfolioDao, TransactionDao transactionDao) {
         this.restTemplate = restTemplate;
+        this.portfolioDao = portfolioDao;
+        this.transactionDao = transactionDao;
     }
 
 //    public String getStockQuote(String symbol) {
@@ -48,21 +60,15 @@ public class StockListingService {
 //    }
 
     public ResponseEntity<String> getStockPrice(String symbol) {
-        String finnhubApiUrl = "https://finnhub.io/api/v1/quote?symbol=" + symbol +
-                "&token=" + finnhubApiKey;
-
         try {
-            String response = restTemplate.getForObject(finnhubApiUrl, String.class);
+            JsonNode rootNode = getCurrentPrice(symbol);
 
-            // Process the JSON response to extract only the required fields
-            ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode rootNode = objectMapper.readTree(response);
-
+            //Extract from JSON response
             double currentPrice = rootNode.get("c").asDouble();
             double high = rootNode.get("h").asDouble();
             double low = rootNode.get("l").asDouble();
             double open = rootNode.get("o").asDouble();
-            double priceChangePercentage = (currentPrice - open) / open * 100;
+            double priceChangePercentage = rootNode.get("dp").asDouble();
 
             // Create a map to store the extracted data
             Map<String, Object> stockQuoteData = new HashMap<>();
@@ -73,6 +79,7 @@ public class StockListingService {
             stockQuoteData.put("priceChangePercentage", priceChangePercentage);
 
             // Convert the extracted data to a JSON string
+            ObjectMapper objectMapper = new ObjectMapper();
             String processedResponse = objectMapper.writeValueAsString(stockQuoteData);
 
             return ResponseEntity.ok(processedResponse);
@@ -81,6 +88,25 @@ public class StockListingService {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while fetching the latest stock value.");
         }
+    }
+
+    public JsonNode getCurrentPrice(String symbol) {
+        log.info("C");
+        String finnhubApiUrl = "https://finnhub.io/api/v1/quote?symbol=" + symbol +
+                "&token=" + finnhubApiKey;
+        log.info("Called");
+        String response = restTemplate.getForObject(finnhubApiUrl, String.class);
+        log.info(response);
+        // Process the JSON response
+        ObjectMapper objectMapper = new ObjectMapper();
+        JsonNode rootNode = null;
+        try {
+            rootNode = objectMapper.readTree(response);
+        } catch (JsonProcessingException e) {
+            log.error("JSON processing error");
+            throw new RuntimeException(e);
+        }
+        return rootNode;
     }
 
     public ResponseEntity<String> tickerSearch(String keyword) {
@@ -95,16 +121,19 @@ public class StockListingService {
             JsonNode rootNode = objectMapper.readTree(response);
             JsonNode bestMatches = rootNode.get("bestMatches");
 
-            List<String> symbolsAndNames = new ArrayList<>();
-            for (int i = 0; i < Math.min(bestMatches.size(), 10); i++) {
-                JsonNode match = bestMatches.get(i);
-                String symbol = match.get("1. symbol").asText();
-                String name = match.get("2. name").asText();
-                symbolsAndNames.add("Symbol: " + symbol + ", Name: " + name);
+            ArrayNode simplifiedOutput = JsonNodeFactory.instance.arrayNode();
+            int count=1;
+            for (JsonNode matchNode : bestMatches) {
+                ObjectNode simplifiedMatch = JsonNodeFactory.instance.objectNode();
+                simplifiedMatch.put("name", matchNode.get("2. name").asText());
+                simplifiedMatch.put("symbol", matchNode.get("1. symbol").asText());
+                simplifiedOutput.add(simplifiedMatch);
+                count++;
+                if (count==10) break;
             }
 
             // Convert the extracted data to a JSON array string
-            String processedResponse = objectMapper.writeValueAsString(symbolsAndNames);
+            String processedResponse = objectMapper.writeValueAsString(simplifiedOutput);
             log.info(processedResponse);
             return ResponseEntity.ok(processedResponse);
         } catch (Exception e) {
@@ -144,6 +173,26 @@ public class StockListingService {
             // Handle the exception and return an error response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while fetching price history.");
+        }
+    }
+
+    public ResponseEntity<StockDetailOutputModel> getStockDetail(StockDetailInputModel stockDetailInput){
+        try {
+            PortfolioEntity portfolioEntity = portfolioDao.findByEmailAndSymbol(
+                    stockDetailInput.getEmail(), stockDetailInput.getSymbol());
+            log.info(portfolioEntity.getSymbol());
+
+             double netProfitLoss = transactionDao.calculateNetStockProfitLoss(
+                    stockDetailInput.getEmail(), stockDetailInput.getSymbol());
+
+            double price = getCurrentPrice(stockDetailInput.getSymbol()).get("c").asDouble();
+
+            StockDetailOutputModel stockDetailOutputModel = new StockDetailOutputModel(portfolioEntity.getEmail(),
+                    portfolioEntity.getSymbol(), netProfitLoss, portfolioEntity.getVolume(), price,
+                    portfolioEntity.getVolume()*price);
+            return ResponseEntity.ok(stockDetailOutputModel);
+        } catch(Exception e){
+            return ResponseEntity.ok(null);
         }
     }
 }

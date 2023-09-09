@@ -1,4 +1,4 @@
-package com.progsa.OutputModels;
+package com.progsa.IOModels;
 
 import com.progsa.model.UserInfo;
 import lombok.Getter;

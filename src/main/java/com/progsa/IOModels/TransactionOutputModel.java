@@ -1,4 +1,4 @@
-package com.progsa.OutputModels;
+package com.progsa.IOModels;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

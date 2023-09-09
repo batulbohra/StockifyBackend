@@ -1,12 +1,12 @@
 package com.progsa.controller;
 
+import com.progsa.IOModels.StockDetailInputModel;
+import com.progsa.IOModels.StockDetailOutputModel;
 import com.progsa.service.StockListingService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/stock-listing")
@@ -48,6 +48,16 @@ public class StockListingController {
             // Handle the exception and return an error response
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body("An error occurred while fetching latest price.");
+        }
+    }
+
+    @GetMapping(value="/stock-detail", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<StockDetailOutputModel> getStockDetail(@RequestBody StockDetailInputModel stockDetailInput) {
+        try {
+            return stockListingService.getStockDetail(stockDetailInput);
+        } catch (Exception e) {
+            // Handle the exception and return an error response
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }

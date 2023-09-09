@@ -1,6 +1,6 @@
 package com.progsa.controller;
 
-import com.progsa.OutputModels.UserLoginResponse;
+import com.progsa.IOModels.UserLoginResponse;
 import com.progsa.model.UserInfo;
 import com.progsa.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
