@@ -1,17 +1,18 @@
 package com.progsa.model;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Entity
 @Table(name="transaction")
 @Getter
 @Setter
+@NoArgsConstructor
 public class TransactionEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,10 +29,10 @@ public class TransactionEntity {
     private String symbol;
 
     @Column(name = "transaction_time", nullable = false)
-    private Date time;
+    private LocalTime time;
 
     @Column(name = "transaction_date", nullable = false)
-    private Date date;
+    private LocalDate date;
 
     @Column(name = "volume", nullable = false)
     private int volume;
@@ -45,7 +46,7 @@ public class TransactionEntity {
     @Column(name = "transaction_type", nullable = false)
     private String transactionType;
 
-    public TransactionEntity(String email, String stockName, String symbol, Date time, Date date, int volume, double price, double cost, String transactionType) {
+    public TransactionEntity(String email, String stockName, String symbol, LocalTime time, LocalDate date, int volume, double price, double cost, String transactionType) {
         this.email = email;
         this.stockName = stockName;
         this.symbol = symbol;

@@ -1,9 +1,10 @@
 package com.progsa.service;
 
+import com.progsa.IOModels.TransactionHistoryModel;
 import com.progsa.IOModels.TransactionInputModel;
 import com.progsa.IOModels.TransactionOutputModel;
 import com.progsa.dao.PortfolioDao;
-import com.progsa.dao.TransactionDaoImpl;
+import com.progsa.dao.TransactionDao;
 import com.progsa.dao.UserInfoDao;
 import com.progsa.model.PortfolioEntity;
 import com.progsa.model.TransactionEntity;
@@ -15,21 +16,24 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @Slf4j
 public class TransactionService {
 
     private final UserInfoDao userInfoDao;
-    private final TransactionDaoImpl transactionDaoImpl;
+    private final TransactionDao transactionDao;
 
     private final PortfolioDao portfolioDao;
 
     @Autowired
-    public TransactionService(UserInfoDao userInfoDao, TransactionDaoImpl transactionDaoImpl, PortfolioDao portfolioDao) {
+    public TransactionService(UserInfoDao userInfoDao, TransactionDao transactionDao, PortfolioDao portfolioDao) {
         this.userInfoDao = userInfoDao;
-        this.transactionDaoImpl = transactionDaoImpl;
+        this.transactionDao = transactionDao;
         this.portfolioDao = portfolioDao;
     }
 
@@ -52,9 +56,9 @@ public class TransactionService {
 
             // Create a transaction record
             TransactionEntity newTransaction = new TransactionEntity(transactionEntity.getEmail(), transactionEntity.getStockName(),
-                    transactionEntity.getSymbol(), new Date(), new Date(), transactionEntity.getVolume(),
+                    transactionEntity.getSymbol(), LocalTime.now(), LocalDate.now(), transactionEntity.getVolume(),
                     transactionEntity.getPrice(), transactionEntity.getVolume()* transactionEntity.getPrice(), "buy");
-            transactionDaoImpl.createTransaction(newTransaction);
+            transactionDao.createTransaction(newTransaction);
 
             // Update Portfolio table
             PortfolioEntity existingPortfolio = portfolioDao.findByEmailAndSymbol(transactionEntity.getEmail(), transactionEntity.getSymbol());
@@ -68,7 +72,7 @@ public class TransactionService {
 
             return ResponseEntity.ok(new TransactionOutputModel(newTransaction.getStockName(), newTransaction.getVolume()));
         } catch(Exception e){
-            log.error("Service Error", e);
+            log.error("Error while trying to buy the stock", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new TransactionOutputModel(null,0));
         }
     }
@@ -92,9 +96,9 @@ public class TransactionService {
 
             // Create a transaction record
             TransactionEntity newTransaction = new TransactionEntity(transactionEntity.getEmail(), transactionEntity.getStockName(),
-                    transactionEntity.getSymbol(), new Date(), new Date(), transactionEntity.getVolume(),
+                    transactionEntity.getSymbol(), LocalTime.now(), LocalDate.now(), transactionEntity.getVolume(),
                     transactionEntity.getPrice(), transactionEntity.getVolume()* transactionEntity.getPrice(), "sell");
-            transactionDaoImpl.createTransaction(newTransaction);
+            transactionDao.createTransaction(newTransaction);
 
             // Update Portfolio table
             PortfolioEntity existingPortfolio = portfolioDao.findByEmailAndSymbol(transactionEntity.getEmail(), transactionEntity.getSymbol());
@@ -106,8 +110,25 @@ public class TransactionService {
 
             return ResponseEntity.ok(new TransactionOutputModel(newTransaction.getStockName(), newTransaction.getVolume()));
         } catch(Exception e){
-            log.error("Service Error", e);
+            log.error("Error while trying to sell the stock", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new TransactionOutputModel(null,0));
+        }
+    }
+
+    public ResponseEntity<List<TransactionHistoryModel>> getTransactionHistory(String email){
+        try {
+            List<TransactionEntity> transactionEntityList = transactionDao.getTransactionByEmail(email);
+            log.info(String.valueOf(transactionEntityList.size()));
+            List<TransactionHistoryModel> transactionHistoryModelList = new ArrayList<>();
+            for (TransactionEntity transaction : transactionEntityList) {
+                transactionHistoryModelList.add(new TransactionHistoryModel(transaction.getStockName(), transaction.getSymbol(),
+                        transaction.getDate(), transaction.getVolume(), transaction.getPrice(), transaction.getCost(),
+                        transaction.getTransactionType()));
+            }
+            return ResponseEntity.ok(transactionHistoryModelList);
+        } catch (Exception e){
+            log.error("Error while fetching Transaction History");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
     }
 }

@@ -2,7 +2,6 @@ package com.progsa.IOModels;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import lombok.NonNull;
 import lombok.Setter;
 
 @Getter
@@ -16,4 +15,5 @@ public class PortfolioOutputModel {
     private int curVolume;
     private double curCost;
     private double percentagePriceChange;
+    private double netPortfolioStockValue;
 }

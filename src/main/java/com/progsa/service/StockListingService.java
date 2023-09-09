@@ -11,6 +11,7 @@ import com.progsa.IOModels.StockDetailOutputModel;
 import com.progsa.dao.PortfolioDao;
 import com.progsa.dao.TransactionDao;
 import com.progsa.model.PortfolioEntity;
+import org.apache.coyote.Response;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -180,12 +181,15 @@ public class StockListingService {
         try {
             PortfolioEntity portfolioEntity = portfolioDao.findByEmailAndSymbol(
                     stockDetailInput.getEmail(), stockDetailInput.getSymbol());
-            log.info(portfolioEntity.getSymbol());
-
-             double netProfitLoss = transactionDao.calculateNetStockProfitLoss(
-                    stockDetailInput.getEmail(), stockDetailInput.getSymbol());
 
             double price = getCurrentPrice(stockDetailInput.getSymbol()).get("c").asDouble();
+
+            if (portfolioEntity==null){
+                return ResponseEntity.ok(new StockDetailOutputModel(stockDetailInput.getEmail(),
+                        stockDetailInput.getSymbol(), 0, 0, price, 0));
+            }
+             double netProfitLoss = transactionDao.calculateNetStockProfitLoss(
+                    stockDetailInput.getEmail(), stockDetailInput.getSymbol());
 
             StockDetailOutputModel stockDetailOutputModel = new StockDetailOutputModel(portfolioEntity.getEmail(),
                     portfolioEntity.getSymbol(), netProfitLoss, portfolioEntity.getVolume(), price,

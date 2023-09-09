@@ -3,10 +3,14 @@ package com.progsa.dao;
 import com.progsa.model.TransactionEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Query;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
+@Slf4j
 public class TransactionDaoImpl implements TransactionDao {
 
     private final TransactionRepository transactionRepository;
@@ -35,5 +39,12 @@ public class TransactionDaoImpl implements TransactionDao {
 
         Double result = (Double) query.getSingleResult();
         return (result != null) ? result : 0.0;
+    }
+
+    public List<TransactionEntity> getTransactionByEmail(String email){
+        log.info("Called");
+        List<TransactionEntity> transactionEntities = transactionRepository.findByEmail(email);
+        log.info(String.valueOf(transactionEntities.size()));
+        return transactionEntities;
     }
 }

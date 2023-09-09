@@ -31,16 +31,20 @@ public class PortfolioService {
         try {
             List<PortfolioEntity> portfolioEntityList = portfolioDao.findByEmail(email);
             List<PortfolioOutputModel> portfolioOutputModelList = new ArrayList<>();
+            double netPortfolioStockValue = 0;
 
             for (PortfolioEntity portfolioEntity : portfolioEntityList) {
                 JsonNode curPriceNode = stockListingService.getCurrentPrice(portfolioEntity.getSymbol());
                 double price = curPriceNode.get("c").asDouble();
                 double percentagePriceChange = curPriceNode.get("dp").asDouble();
+                double cost = price * portfolioEntity.getVolume();
                 portfolioOutputModelList.add(new PortfolioOutputModel(portfolioEntity.getEmail(),
                         portfolioEntity.getStockName(), portfolioEntity.getSymbol(), price, portfolioEntity.getVolume(),
-                        price * portfolioEntity.getVolume(), percentagePriceChange));
+                        cost, percentagePriceChange, -1));
+                netPortfolioStockValue+=cost;
             }
-
+            portfolioOutputModelList.add(new PortfolioOutputModel(null,null,null,-1,-1,
+                    -1,-1,netPortfolioStockValue));
             return ResponseEntity.ok(portfolioOutputModelList);
         } catch(Exception e){
             log.error("Portfolio Service Error", e);
