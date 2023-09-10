@@ -137,9 +137,9 @@ public class TransactionService {
             log.info(String.valueOf(transactionEntityList.size()));
             List<TransactionHistoryModel> transactionHistoryModelList = new ArrayList<>();
             for (TransactionEntity transaction : transactionEntityList) {
-                transactionHistoryModelList.add(new TransactionHistoryModel(transaction.getStockName(), transaction.getSymbol(),
-                        transaction.getDate(), transaction.getVolume(), transaction.getPrice(), transaction.getCost(),
-                        transaction.getTransactionType()));
+                transactionHistoryModelList.add(new TransactionHistoryModel(transaction.getTransactionKey(),
+                        transaction.getStockName(), transaction.getSymbol(), transaction.getDate(), transaction.getVolume(),
+                        transaction.getPrice(), transaction.getCost(), transaction.getTransactionType()));
             }
             return ResponseEntity.ok(transactionHistoryModelList);
         } catch (Exception e){
