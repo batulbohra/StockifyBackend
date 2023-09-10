@@ -52,6 +52,10 @@ public class TransactionService {
             // Calculate the cost
             double cost = transactionEntity.getPrice() * transactionEntity.getVolume();
 
+            if (user.getBalance() < cost){
+                return ResponseEntity.ok().body(new TransactionOutputModel(transactionEntity.getStockName(), 0));
+            }
+
             log.info(user.getEmail());
             // Update user's balance
             double newBalance = user.getBalance() - cost;
