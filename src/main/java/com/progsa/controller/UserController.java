@@ -15,6 +15,7 @@ import java.util.Map;
 import static com.progsa.Constants.*;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/user")
 public class UserController {
 

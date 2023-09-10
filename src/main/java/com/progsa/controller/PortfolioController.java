@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/portfolio")
 public class PortfolioController {
 
@@ -20,7 +21,7 @@ public class PortfolioController {
     }
 
     @GetMapping("/detail")
-    public ResponseEntity<List<PortfolioOutputModel>> getPortfolio(
+    public ResponseEntity<PortfolioOutputModel> getPortfolio(
             @RequestParam(value = "query", required=true) String email) {
         return portfolioService.getPortfolioDetail(email);
     }

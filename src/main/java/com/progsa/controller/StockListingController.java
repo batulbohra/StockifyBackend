@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/stock-listing")
 public class StockListingController {
     private final StockListingService stockListingService;
@@ -51,7 +52,7 @@ public class StockListingController {
         }
     }
 
-    @GetMapping(value="/stock-detail", consumes = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(value="/stock-detail", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<StockDetailOutputModel> getStockDetail(@RequestBody StockDetailInputModel stockDetailInput) {
         try {
             return stockListingService.getStockDetail(stockDetailInput);

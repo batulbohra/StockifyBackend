@@ -4,16 +4,13 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 @Getter
 @Setter
 @AllArgsConstructor
 public class PortfolioOutputModel {
-    private String email;
-    private String stockName;
-    private String symbol;
-    private double curPrice;
-    private int curVolume;
-    private double curCost;
-    private double percentagePriceChange;
-    private double netPortfolioStockValue;
+    private double netPortfolioGain;
+    private double netPortfolioValue;
+    private List<PortfolioStockModel> portfolioStockModelList;
 }

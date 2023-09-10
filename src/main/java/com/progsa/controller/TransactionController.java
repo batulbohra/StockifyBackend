@@ -16,6 +16,7 @@ import java.util.List;
 import static com.progsa.Constants.ERROR_MESSAGE;
 
 @RestController
+@CrossOrigin
 @RequestMapping("/api/transaction")
 public class TransactionController {
 
