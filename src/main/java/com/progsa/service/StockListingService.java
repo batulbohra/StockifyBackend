@@ -22,6 +22,9 @@ import java.util.*;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service class to fetch data for a particular stock.
+ */
 @Service
 @Slf4j
 public class StockListingService {
@@ -41,25 +44,11 @@ public class StockListingService {
         this.transactionDao = transactionDao;
     }
 
-//    public String getStockQuote(String symbol) {
-//        String finnhubApiUrl = "https://finnhub.io/api/v1/quote?symbol=" + symbol +
-//                "&token=" + finnhubApiKey;
-//
-//        return restTemplate.getForObject(finnhubApiUrl, String.class);
-//    }
-//    public String tickerSearch(String keyword) {
-//        String apiUrl = "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=" + keyword +
-//                "&apikey=" + alphaVantageApiKey;
-//
-//        return restTemplate.getForObject(apiUrl, String.class);
-//    }
-//    public String getPriceHistory(String symbol) {
-//        String apiUrl = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + symbol +
-//                "&apikey=" + alphaVantageApiKey;
-//
-//        return restTemplate.getForObject(apiUrl, String.class);
-//    }
-
+    /**
+     * Method to fetch current price of a stock.
+     * @param symbol
+     * @return stockPrice
+     */
     public ResponseEntity<String> getStockPrice(String symbol) {
         try {
             JsonNode rootNode = getCurrentPrice(symbol);
@@ -110,6 +99,11 @@ public class StockListingService {
         return rootNode;
     }
 
+    /**
+     * Method to fetch all the stocks corresponding to a keyword.
+     * @param keyword
+     * @return stockList
+     */
     public ResponseEntity<String> tickerSearch(String keyword) {
         String apiUrl = "https://www.alphavantage.co/query?function=SYMBOL_SEARCH&keywords=" + keyword +
                 "&apikey=" + alphaVantageApiKey;
@@ -144,6 +138,10 @@ public class StockListingService {
         }
     }
 
+    /**
+     * Method to fetch 7 days price history of a stock
+     * @param symbol
+     */
     public ResponseEntity<String> getPriceHistory(String symbol) {
         String apiUrl = "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=" + symbol +
                 "&apikey=" + alphaVantageApiKey;
@@ -177,6 +175,11 @@ public class StockListingService {
         }
     }
 
+    /**
+     * Method to fetch all the stock detail of a particular stock for a user.
+     * @param stockDetailInput
+     * @return stockDetail
+     */
     public ResponseEntity<StockDetailOutputModel> getStockDetail(StockDetailInputModel stockDetailInput){
         try {
             PortfolioEntity portfolioEntity = portfolioDao.findByEmailAndSymbol(

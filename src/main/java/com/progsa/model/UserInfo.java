@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import static com.progsa.Constants.INITIAL_BALANCE;
+
 @Entity
 @Table(name = "users")
 @Getter
@@ -28,7 +30,7 @@ public class UserInfo {
 
     public UserInfo() {
         // Default constructor
-        this.balance = 1000.0; // Initialize balance to $1000 by default
+        this.balance = INITIAL_BALANCE; // Initialize balance to 1000
     }
 
     public UserInfo(String email, String firstName, String lastName, String password) {
@@ -36,6 +38,6 @@ public class UserInfo {
         this.firstName = firstName;
         this.lastName = lastName;
         this.password = password;
-        this.balance = 1000.0; // Initialize balance to $1000
+        this.balance = INITIAL_BALANCE; // Initialize balance to 1000
     }
 }

@@ -8,5 +8,5 @@ public class Constants {
     public static final String USER_NOT_FOUND = "User Not Found";
     public static final String USER_CREATED = "User created successfully";
     public static final String EMAIL_EXISTS = "Email already exists";
-    public static final String INSUFFICIENT_FUNDS = "Insufficient funds";
+    public static final String ALPHAVANTAGE_URL = "https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=";
 }

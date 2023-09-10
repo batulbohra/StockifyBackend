@@ -12,6 +12,11 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import static com.progsa.Constants.ALPHAVANTAGE_URL;
+
+/**
+ * Service class to hold all the logic to fetch market status.
+ */
 @Service
 @Slf4j
 public class MarketStatusService {
@@ -33,7 +38,7 @@ public class MarketStatusService {
     }
 
     private ResponseEntity<String> getTopPerformers(String performersType) {
-        String apiUrl = "https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=" + alphaVantageApiKey;
+        String apiUrl = ALPHAVANTAGE_URL + alphaVantageApiKey;
 
         try {
             String response = restTemplate.getForObject(apiUrl, String.class);
@@ -68,22 +73,3 @@ public class MarketStatusService {
         }
     }
 }
-
-//@Service
-//public class MarketStatusService {
-//    @Value("${alphaVantage.apiKey}")
-//    private String alphaVantageApiKey;
-//
-//    private final RestTemplate restTemplate;
-//
-//    public MarketStatusService(RestTemplate restTemplate) {
-//        this.restTemplate = restTemplate;
-//    }
-//
-////    public String getMarketStatus() {
-////        String apiUrl = "https://www.alphavantage.co/query?function=TOP_GAINERS_LOSERS&apikey=" + alphaVantageApiKey;
-////
-////        String response = restTemplate.getForObject(apiUrl, String.class);
-////        return response;
-////    }
-//}

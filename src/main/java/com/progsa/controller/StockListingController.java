@@ -8,6 +8,9 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * Controller class for stocks related query.
+ */
 @RestController
 @CrossOrigin
 @RequestMapping("/api/stock-listing")

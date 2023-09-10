@@ -38,6 +38,7 @@ public class TransactionDaoImpl implements TransactionDao {
         query.setParameter("symbol", symbol);
 
         Double result = (Double) query.getSingleResult();
+        result = Math.round(result*100.0)/100.0;
         return (result != null) ? result : 0.0;
     }
 

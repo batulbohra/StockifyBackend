@@ -15,6 +15,9 @@ import java.util.List;
 
 import static com.progsa.Constants.ERROR_MESSAGE;
 
+/**
+ * Controller class for user transactions related query.
+ */
 @RestController
 @CrossOrigin
 @RequestMapping("/api/transaction")
@@ -33,8 +36,7 @@ public class TransactionController {
             ResponseEntity<TransactionOutputModel> response = transactionService.buyStock(transactionInput);
             return ResponseEntity.ok(response.getBody());
         } catch (Exception e) {
-            // Handle internal server error
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ERROR_MESSAGE, e);
+            return ResponseEntity.internalServerError().body(null);
         }
     }
 
@@ -44,8 +46,7 @@ public class TransactionController {
             ResponseEntity<TransactionOutputModel> response = transactionService.sellStock(transactionInput);
             return ResponseEntity.ok(response.getBody());
         } catch (Exception e) {
-            // Handle internal server error
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ERROR_MESSAGE, e);
+            return ResponseEntity.internalServerError().body(null);
         }
     }
 
@@ -56,8 +57,7 @@ public class TransactionController {
             ResponseEntity<List<TransactionHistoryModel>> response = transactionService.getTransactionHistory(email);
             return ResponseEntity.ok(response.getBody());
         } catch (Exception e) {
-            // Handle internal server error
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ERROR_MESSAGE, e);
+            return ResponseEntity.internalServerError().body(null);
         }
     }
 }

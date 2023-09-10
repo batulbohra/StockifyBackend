@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * Controller class for market related query.
+ */
 @RestController
 @CrossOrigin
 @RequestMapping("/api/market-status")
@@ -43,17 +46,3 @@ public class MarketStatusController {
         }
     }
 }
-
-//@RestController
-//public class MarketStatusController {
-//    private final MarketStatusService marketStatusService;
-//
-//    public MarketStatusController(MarketStatusService marketStatusService) {
-//        this.marketStatusService = marketStatusService;
-//    }
-//
-//    @GetMapping("/api/market-status")
-//    public String getMarketStatus() {
-//        return marketStatusService.getMarketStatus();
-//    }
-//}

@@ -14,6 +14,9 @@ import java.util.Map;
 
 import static com.progsa.Constants.*;
 
+/**
+ * Controller class for User data related query.
+ */
 @RestController
 @CrossOrigin
 @RequestMapping("/api/user")
@@ -31,7 +34,7 @@ public class UserController {
         try {
             return userService.signUp(user);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ERROR_MESSAGE, e);
+            return ResponseEntity.internalServerError().body(null);
         }
     }
 
@@ -40,7 +43,16 @@ public class UserController {
         try {
             return userService.login(loginRequest);
         } catch (Exception e) {
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, ERROR_MESSAGE, e);
+            return ResponseEntity.internalServerError().body(null);
+        }
+    }
+
+    @GetMapping("walletBalance")
+    public ResponseEntity<Double> getWalletBalance(@RequestParam(value = "query", required=true) String email){
+        try{
+            return userService.fetchUserWalletBalance(email);
+        } catch(Exception e){
+            return ResponseEntity.internalServerError().body(null);
         }
     }
 }

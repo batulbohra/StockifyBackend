@@ -12,10 +12,12 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import javax.sound.sampled.Port;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service class for all the User Portfolio based queries.
+ */
 @Service
 @Slf4j
 public class PortfolioService {
@@ -40,8 +42,8 @@ public class PortfolioService {
             for (PortfolioEntity portfolioEntity : portfolioEntityList) {
                 JsonNode curPriceNode = stockListingService.getCurrentPrice(portfolioEntity.getSymbol());
                 double price = curPriceNode.get("c").asDouble();
-                double percentagePriceChange = curPriceNode.get("dp").asDouble();
-                double cost = price * portfolioEntity.getVolume();
+                double percentagePriceChange = Math.round(curPriceNode.get("dp").asDouble()*1000.0)/1000.0;
+                double cost = Math.round(price*portfolioEntity.getVolume()*100.0)/100.0;
                 portfolioStockModelList.add(new PortfolioStockModel(portfolioEntity.getEmail(),
                         portfolioEntity.getStockName(), portfolioEntity.getSymbol(), price, portfolioEntity.getVolume(),
                         cost, percentagePriceChange, percentagePriceChange*portfolioEntity.getVolume()));

@@ -12,6 +12,9 @@ import static com.progsa.Constants.*;
 
 import java.util.Map;
 
+/**
+ * Service Class for onboarding a user
+ */
 @Service
 public class UserService {
 
@@ -32,30 +35,46 @@ public class UserService {
             userDao.createUser(user);
 
             return ResponseEntity.ok(USER_CREATED);
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ERROR_MESSAGE);
+        } catch(Exception e){
+            throw new RuntimeException(e);
         }
     }
 
     public ResponseEntity<UserLoginResponse> login(Map<String, String> loginRequest) {
-        String email = loginRequest.get("email");
-        String password = loginRequest.get("password");
+        try {
+            String email = loginRequest.get("email");
+            String password = loginRequest.get("password");
 
-        // Validate if the user exists
-        UserInfo userInfo = userDao.getUserByEmail(email);
-        if (userInfo == null) {
-            return ResponseEntity.badRequest().body(new UserLoginResponse(USER_NOT_FOUND, null));
+            // Validate if the user exists
+            UserInfo userInfo = userDao.getUserByEmail(email);
+            if (userInfo == null) {
+                return ResponseEntity.badRequest().body(new UserLoginResponse(USER_NOT_FOUND, null));
+            }
+
+            // Verify email and password
+            boolean verificationStatus = verifyUser(userInfo, password);
+            if (!verificationStatus) {
+                return ResponseEntity.ok(new UserLoginResponse(INCORRECT_PASSWORD, null));
+            }
+
+            // Return user data without the password
+            userInfo.setPassword(null); // Set the password to null before returning
+            return ResponseEntity.ok(new UserLoginResponse(VERIFIED, userInfo));
+        } catch(Exception e){
+            throw new RuntimeException(e);
         }
+    }
 
-        // Verify email and password
-        boolean verificationStatus = verifyUser(userInfo, password);
-        if (!verificationStatus) {
-            return ResponseEntity.ok(new UserLoginResponse(INCORRECT_PASSWORD, null));
+    public ResponseEntity<Double> fetchUserWalletBalance(String email){
+        try {
+            UserInfo userInfo = userDao.getUserByEmail(email);
+            if (userInfo == null) {
+                return ResponseEntity.badRequest().body(null);
+            }
+            return ResponseEntity.ok().body(userInfo.getBalance());
+        } catch(Exception e){
+            throw new RuntimeException(e);
         }
-
-        // Return user data without the password
-        userInfo.setPassword(null); // Set the password to null before returning
-        return ResponseEntity.ok(new UserLoginResponse(VERIFIED, userInfo));
     }
 
     public boolean verifyUser(UserInfo userInfo, String password) {

@@ -21,6 +21,9 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Service class responsible for user transaction related activities.
+ */
 @Service
 @Slf4j
 public class TransactionService {
@@ -37,6 +40,9 @@ public class TransactionService {
         this.portfolioDao = portfolioDao;
     }
 
+    /**
+     * Method to buy a particular stock
+     */
     @Transactional
     public ResponseEntity<TransactionOutputModel> buyStock(TransactionInputModel transactionEntity) {
         try {
@@ -77,6 +83,9 @@ public class TransactionService {
         }
     }
 
+    /**
+     * Method to sell a particular stock
+     */
     @Transactional
     public ResponseEntity<TransactionOutputModel> sellStock(TransactionInputModel transactionEntity) {
         try {
@@ -115,6 +124,9 @@ public class TransactionService {
         }
     }
 
+    /**
+     * Method to fetch all the transactions of a user
+     */
     public ResponseEntity<List<TransactionHistoryModel>> getTransactionHistory(String email){
         try {
             List<TransactionEntity> transactionEntityList = transactionDao.getTransactionByEmail(email);
