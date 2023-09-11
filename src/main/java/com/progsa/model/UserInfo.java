@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.List;
+
 import static com.progsa.Constants.INITIAL_BALANCE;
 
 @Entity
@@ -11,6 +13,12 @@ import static com.progsa.Constants.INITIAL_BALANCE;
 @Getter
 @Setter
 public class UserInfo {
+
+    @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<PortfolioEntity> portfolioEntries;
+
+    @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<TransactionEntity> transactionEntities;
 
     @Id
     @Column(name = "email_address", nullable = false, unique = true) // Making email the primary key

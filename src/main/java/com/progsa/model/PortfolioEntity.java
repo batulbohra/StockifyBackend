@@ -14,6 +14,10 @@ import java.util.Date;
 @NoArgsConstructor
 public class PortfolioEntity {
 
+    @ManyToOne
+    @JoinColumn(name = "email", referencedColumnName = "email_address", insertable = false, updatable = false)
+    private UserInfo userInfo;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
