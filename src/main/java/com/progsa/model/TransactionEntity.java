@@ -14,9 +14,6 @@ import java.time.LocalTime;
 @Setter
 @NoArgsConstructor
 public class TransactionEntity {
-    @ManyToOne
-    @JoinColumn(name = "email", referencedColumnName = "email_address", insertable = false, updatable = false)
-    private UserInfo userInfo;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

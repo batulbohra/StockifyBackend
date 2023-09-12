@@ -14,12 +14,6 @@ import static com.progsa.Constants.INITIAL_BALANCE;
 @Setter
 public class UserInfo {
 
-    @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<PortfolioEntity> portfolioEntries;
-
-    @OneToMany(mappedBy = "userInfo", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<TransactionEntity> transactionEntities;
-
     @Id
     @Column(name = "email_address", nullable = false, unique = true) // Making email the primary key
     private String email;
