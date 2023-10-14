@@ -2,7 +2,6 @@
 
 Frontend Github link: https://github.com/batulbohra/stockifyUI
 
-
-
-https://github.com/batulbohra/StockifyBackend/assets/87557934/46c92aad-901d-4f2e-8856-766c47c05837
+Stockify App Demo:
+https://github.com/batulbohra/StockifyBackend/assets/87557934/240aa981-c7b8-47c6-a19c-48d4d478b9db
 
